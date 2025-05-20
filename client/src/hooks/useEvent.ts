@@ -56,6 +56,7 @@ export function useEvent(): UseEventResult {
   });
 
   const updateEvent = async (data: UpdateEventParams) => {
+  console.log("🔁 updateEvent called with:", data);
     // Step 1: update your local/backend API
     await updateEventMutation(data);
 
