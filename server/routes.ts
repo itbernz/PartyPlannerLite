@@ -290,5 +290,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(dateOptionsWithVotes);
   });
 
+  // Set final date for an event
+  app.post('/api/events/:id/final-date', async (req: Request, res: Response) => {
+    const eventId = parseInt(req.params.id);
+    if (isNaN(eventId)) {
+      return res.status(400).json({ message: 'Invalid event ID' });
+    }
+    
+    const { dateOptionId } = req.body;
+    if (!dateOptionId || isNaN(parseInt(dateOptionId))) {
+      return res.status(400).json({ message: 'Invalid date option ID' });
+    }
+    
+    const updatedEvent = await storage.setFinalDateOption(eventId, parseInt(dateOptionId));
+    if (!updatedEvent) {
+      return res.status(404).json({ message: 'Event or date option not found' });
+    }
+    
+    broadcastUpdate('event_updated', updatedEvent);
+    res.json(updatedEvent);
+  });
+
   return httpServer;
 }

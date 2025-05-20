@@ -92,6 +92,7 @@ export class MemStorage implements IStorage {
       image: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=450",
       locationText: "123 Sunshine Blvd, Rooftop Area",
       locationNotes: "Take the elevator to the 15th floor. The rooftop area is accessible via the staircase next to the elevator. Look for the colorful lanterns!",
+      finalDateOptionId: null,
       created: new Date(),
     };
     this.events.set(event.id, event);

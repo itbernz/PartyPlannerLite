@@ -14,6 +14,8 @@ interface UseRsvpResult {
 interface SubmitRsvpParams {
   name: string;
   message?: string;
+  email?: string;
+  wantsUpdates?: boolean;
   dateOptionIds: number[];
 }
 
@@ -35,6 +37,8 @@ export function useRsvp(): UseRsvpResult {
       await apiRequest('POST', `/api/events/${eventId}/rsvps`, {
         name: data.name,
         message: data.message,
+        email: data.email,
+        wantsUpdates: data.wantsUpdates,
         dateOptionIds: data.dateOptionIds,
       });
       

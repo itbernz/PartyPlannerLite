@@ -11,6 +11,14 @@ import {
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Ensure schema definitions don't have circular references
+const eventsTable = "events";
+const dateOptionsTable = "date_options";
+const rsvpsTable = "rsvps";
+const dateSelectionsTable = "date_selections";
+const activitiesTable = "activities";
+const reactionsTable = "reactions";
+
 // Event table - stores event information
 export const events = pgTable("events", {
   id: serial("id").primaryKey(),

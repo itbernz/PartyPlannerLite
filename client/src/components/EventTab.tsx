@@ -18,6 +18,8 @@ const formSchema = z.object({
     message: "Name must be at least 2 characters.",
   }),
   message: z.string().optional(),
+  email: z.string().email({ message: "Invalid email address" }).optional(),
+  wantsUpdates: z.boolean().default(false),
   dateOptions: z.array(z.number()).min(1, {
     message: "You must select at least one date.",
   }),
@@ -33,6 +35,8 @@ export function EventTab() {
     defaultValues: {
       name: "",
       message: "",
+      email: "",
+      wantsUpdates: false,
       dateOptions: [],
     },
   });
@@ -42,6 +46,8 @@ export function EventTab() {
       await submitRsvp({
         name: values.name,
         message: values.message,
+        email: values.email,
+        wantsUpdates: values.wantsUpdates,
         dateOptionIds: values.dateOptions,
       });
       
@@ -186,6 +192,47 @@ export function EventTab() {
                           />
                         </FormControl>
                         <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email (Optional, for updates)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="your.email@example.com" 
+                            type="email"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="wantsUpdates"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>
+                            I'd like to receive updates via email
+                          </FormLabel>
+                          <FormDescription>
+                            We'll only send important updates about this event.
+                          </FormDescription>
+                        </div>
                       </FormItem>
                     )}
                   />

@@ -7,6 +7,7 @@ interface UseEventResult {
   event: EventWithDetails | undefined;
   isLoading: boolean;
   updateEvent: (data: UpdateEventParams) => Promise<void>;
+  setFinalDate: (dateOptionId: number) => Promise<void>;
   isUpdating: boolean;
 }
 
