@@ -19,6 +19,7 @@ export const events = pgTable("events", {
   image: text("image").notNull(),
   locationText: text("location_text").notNull(),
   locationNotes: text("location_notes"),
+  finalDateOptionId: integer("final_date_option_id"),
   created: timestamp("created").defaultNow().notNull(),
 });
 
@@ -36,6 +37,8 @@ export const rsvps = pgTable("rsvps", {
   eventId: integer("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   message: text("message"),
+  email: text("email"),
+  wantsUpdates: boolean("wants_updates").default(false),
   created: timestamp("created").defaultNow().notNull(),
 });
 

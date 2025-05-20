@@ -27,6 +27,7 @@ export interface IStorage {
   getEvent(id: number): Promise<Event | undefined>;
   createEvent(event: InsertEvent): Promise<Event>;
   updateEvent(id: number, event: InsertEvent): Promise<Event | undefined>;
+  setFinalDateOption(eventId: number, dateOptionId: number): Promise<Event | undefined>;
   
   // Date options operations
   getDateOptionsByEventId(eventId: number): Promise<DateOption[]>;
@@ -146,6 +147,22 @@ export class MemStorage implements IStorage {
       ...eventData,
     };
     this.events.set(id, updatedEvent);
+    return updatedEvent;
+  }
+  
+  async setFinalDateOption(eventId: number, dateOptionId: number): Promise<Event | undefined> {
+    const existingEvent = this.events.get(eventId);
+    if (!existingEvent) return undefined;
+    
+    // Verify the date option exists and belongs to this event
+    const dateOption = this.dateOptions.get(dateOptionId);
+    if (!dateOption || dateOption.eventId !== eventId) return undefined;
+    
+    const updatedEvent: Event = {
+      ...existingEvent,
+      finalDateOptionId: dateOptionId,
+    };
+    this.events.set(eventId, updatedEvent);
     return updatedEvent;
   }
   
