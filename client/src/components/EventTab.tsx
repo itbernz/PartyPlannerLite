@@ -179,106 +179,106 @@ export function EventTab() {
                   </FormItem>
                 )}
               />
-            
-            
-            {/* RSVP Form */}
-            <Card className="rounded-xl">
-              <CardContent className="p-4">
-                <h3 className="font-heading font-semibold text-lg mb-3">RSVP</h3>
-                
-                <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Your Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter your name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              
+              {/* RSVP Form */}
+              <Card className="rounded-xl">
+                <CardContent className="p-4">
+                  <h3 className="font-heading font-semibold text-lg mb-3">RSVP</h3>
                   
-                  <FormField
-                    control={form.control}
-                    name="message"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Message (Optional)</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Add a message to your RSVP" 
-                            rows={3} 
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email (Optional, for updates)</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="your.email@example.com" 
-                            type="email"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="wantsUpdates"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel>
-                            I'd like to receive updates via email
-                          </FormLabel>
-                          <FormDescription>
-                            We'll only send important updates about this event.
-                          </FormDescription>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <Button 
-                    type="submit" 
-                    className="w-full"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Submitting...
-                      </>
-                    ) : (
-                      "Submit RSVP"
-                    )}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </form>
-        </Form>
+                  <div className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Your Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter your name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="message"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Message (Optional)</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="Add a message to your RSVP" 
+                              rows={3} 
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email (Optional, for updates)</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="your.email@example.com" 
+                              type="email"
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="wantsUpdates"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel>
+                              I'd like to receive updates via email
+                            </FormLabel>
+                            <FormDescription>
+                              We'll only send important updates about this event.
+                            </FormDescription>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <Button 
+                      type="submit" 
+                      className="w-full"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Submitting...
+                        </>
+                      ) : (
+                        "Submit RSVP"
+                      )}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </form>
+          </Form>
+        )}
       </div>
     </div>
   );
