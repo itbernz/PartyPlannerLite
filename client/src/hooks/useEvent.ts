@@ -56,9 +56,16 @@ export function useEvent(): UseEventResult {
   });
 
   const updateEvent = async (data: UpdateEventParams) => {
-  console.log("🔁 updateEvent called with:", data);
+    console.log("🔁 updateEvent() called with:", data);
+
     // Step 1: update your local/backend API
-    await updateEventMutation(data);
+    try {
+      await updateEventMutation(data);
+      console.log("✅ Local API update successful.");
+    } catch (err) {
+      console.error("❌ Local API update failed:", err);
+      throw err; // prevents Google Sheets call if backend fails
+    }
 
     // Step 2: also send event to Google Sheets
     const webhookUrl = "https://script.google.com/macros/s/AKfycbzQfGc98HWv1Ac3YkcfkPxSKuYAYORhFlOedTLy-g51BNInbMTQH_Kmv6LdLsyFi-6kRg/exec";
@@ -72,6 +79,8 @@ export function useEvent(): UseEventResult {
       Timestamp: new Date().toISOString()
     };
 
+    console.log("📤 Sending data to Google Sheets:", formattedData);
+
     try {
       await fetch(webhookUrl, {
         method: "POST",
@@ -81,11 +90,11 @@ export function useEvent(): UseEventResult {
         },
         body: JSON.stringify(formattedData)
       });
+
       console.log("✅ Event data also sent to Google Sheet.");
     } catch (error) {
       console.error("❌ Failed to send event data to Google Sheet:", error);
     }
-  };
 
   const setFinalDate = async (dateOptionId: number) => {
     await setFinalDateMutation(dateOptionId);

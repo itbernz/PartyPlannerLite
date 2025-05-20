@@ -21,8 +21,8 @@ const eventFormSchema = z.object({
   title: z.string().min(3, {
     message: "Title must be at least 3 characters.",
   }),
-  description: z.string().min(10, {
-    message: "Description must be at least 10 characters.",
+  description: z.string().min(5, {
+    message: "Description must be at least 5 characters.",
   }),
   image: z.string().url({
     message: "Please enter a valid URL.",
@@ -83,10 +83,12 @@ export function AdminView() {
   
   const onSubmit = async (values: z.infer<typeof eventFormSchema>) => {
     if (!event) return;
-    
+
+    console.log("🚀 Submitting event:", values);
+
     try {
       setIsSubmitting(true);
-      
+
       await updateEvent({
         ...values,
         dateOptions: dateOptions.map(opt => ({
@@ -96,11 +98,12 @@ export function AdminView() {
           eventId: event.id,
         })),
       });
-      
+
       toast({
         title: "Event details saved successfully!",
       });
     } catch (error) {
+      console.error("❌ Error in onSubmit:", error);
       toast({
         variant: "destructive",
         title: "Failed to save event details",
