@@ -22,12 +22,12 @@ interface UpdateEventParams {
 
 export function useEvent(): UseEventResult {
   const { eventId } = useEventContext();
-  
+
   const { data: event, isLoading } = useQuery<EventWithDetails>({
     queryKey: [`/api/events/${eventId}`],
     enabled: !!eventId,
   });
-  
+
   const { mutateAsync: updateEventMutation, isPending: isUpdating } = useMutation({
     mutationFn: async (data: UpdateEventParams) => {
       // First update the event details
@@ -38,33 +38,57 @@ export function useEvent(): UseEventResult {
         locationText: data.locationText,
         locationNotes: data.locationNotes || '',
       };
-      
+
       await apiRequest('PUT', `/api/events/${eventId}`, eventData);
-      
-      // Handle date options updates (this is simplified for the example)
-      // In a real app, you'd need to create new options, update existing ones, and delete removed ones
-      
-      // For this example, just refresh the data
+
+      // Refresh the local event cache
       await queryClient.invalidateQueries({ queryKey: [`/api/events/${eventId}`] });
     },
   });
-  
+
   const { mutateAsync: setFinalDateMutation } = useMutation({
     mutationFn: async (dateOptionId: number) => {
       await apiRequest('POST', `/api/events/${eventId}/final-date`, { dateOptionId });
-      
+
       // Refresh event data
       await queryClient.invalidateQueries({ queryKey: [`/api/events/${eventId}`] });
     },
   });
-  
+
   const updateEvent = async (data: UpdateEventParams) => {
+    // Step 1: update your local/backend API
     await updateEventMutation(data);
+
+    // Step 2: also send event to Google Sheets
+    const webhookUrl = "https://script.google.com/macros/s/AKfycbzQfGc98HWv1Ac3YkcfkPxSKuYAYORhFlOedTLy-g51BNInbMTQH_Kmv6LdLsyFi-6kRg/exec";
+
+    const formattedData = {
+      Title: data.title,
+      Description: data.description,
+      Image: data.image,
+      Location: data.locationText,
+      LocationNotes: data.locationNotes || "",
+      Timestamp: new Date().toISOString()
+    };
+
+    try {
+      await fetch(webhookUrl, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formattedData)
+      });
+      console.log("✅ Event data also sent to Google Sheet.");
+    } catch (error) {
+      console.error("❌ Failed to send event data to Google Sheet:", error);
+    }
   };
-  
+
   const setFinalDate = async (dateOptionId: number) => {
     await setFinalDateMutation(dateOptionId);
   };
-  
+
   return { event, isLoading, updateEvent, setFinalDate, isUpdating };
 }
