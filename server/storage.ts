@@ -253,32 +253,33 @@ export class DatabaseStorage implements IStorage {
   async getDateOptionsWithVotes(eventId: number): Promise<DateOptionWithVotes[]> {
     const dateOptions = await this.getDateOptionsByEventId(eventId);
     
-    // Using a SQL query to count votes for each date option
-    const voteCounts = await db
-      .select({
-        dateOptionId: dateSelections.dateOptionId,
-        votes: sql<number>`count(*)`,
-      })
-      .from(dateSelections)
-      .innerJoin(dateOptions, eq(dateSelections.dateOptionId, dateOptions.id))
-      .where(eq(dateOptions.eventId, eventId))
-      .groupBy(dateSelections.dateOptionId);
+    // For each date option, count its selections manually
+    const results: DateOptionWithVotes[] = [];
     
-    // Create a map of date option id to vote count
-    const voteMap = new Map<number, number>();
-    voteCounts.forEach(vc => voteMap.set(vc.dateOptionId, vc.votes));
-    
-    // Find max votes for percentage calculation (default to 1 if no votes)
-    const maxVotes = Math.max(...Array.from(voteMap.values()), 1);
-    
-    return dateOptions.map(option => {
-      const votes = voteMap.get(option.id) || 0;
-      return {
+    for (const option of dateOptions) {
+      // Count selections for this option
+      const selections = await db
+        .select()
+        .from(dateSelections)
+        .where(eq(dateSelections.dateOptionId, option.id));
+      
+      const votes = selections.length;
+      
+      results.push({
         ...option,
         votes,
-        percentage: (votes / maxVotes) * 100,
-      };
-    });
+        percentage: 0 // Will calculate after finding max
+      });
+    }
+    
+    // Find max votes for percentage calculation (default to 1 if no votes)
+    const maxVotes = Math.max(...results.map(r => r.votes), 1);
+    
+    // Calculate percentages
+    return results.map(option => ({
+      ...option,
+      percentage: (option.votes / maxVotes) * 100
+    }));
   }
 }
 
