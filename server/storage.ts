@@ -30,6 +30,7 @@ export interface IStorage {
   getEvent(id: number): Promise<Event | undefined>;
   createEvent(event: InsertEvent): Promise<Event>;
   updateEvent(id: number, event: InsertEvent): Promise<Event | undefined>;
+  deleteEvent(id: number): Promise<void>;
   setFinalDateOption(eventId: number, dateOptionId: number): Promise<Event | undefined>;
   
   // Date options operations
@@ -79,6 +80,14 @@ export class DatabaseStorage implements IStorage {
       .where(eq(events.id, id))
       .returning();
     return updatedEvent;
+  }
+  
+  async deleteEvent(id: number): Promise<void> {
+    // Delete event and rely on cascade deletes in database schema
+    // to handle deleting related entities like date options, RSVPs, etc.
+    await db
+      .delete(events)
+      .where(eq(events.id, id));
   }
   
   async setFinalDateOption(eventId: number, dateOptionId: number): Promise<Event | undefined> {

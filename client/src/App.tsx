@@ -8,10 +8,14 @@ import Home from "@/pages/home";
 import { EventProvider } from "./contexts/EventContext";
 import { ThemeProvider } from "./components/ui/theme-provider";
 
+import EventsList from "@/pages/events-list";
+import EventView from "@/pages/event-view";
+
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/" component={EventsList} />
+      <Route path="/events/:id" component={EventView} />
       <Route component={NotFound} />
     </Switch>
   );

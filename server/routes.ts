@@ -103,6 +103,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Delete event
+  app.delete('/api/events/:id', async (req: Request, res: Response) => {
+    const eventId = parseInt(req.params.id);
+    if (isNaN(eventId)) {
+      return res.status(400).json({ message: 'Invalid event ID' });
+    }
+    
+    try {
+      await storage.deleteEvent(eventId);
+      broadcastUpdate('event_deleted', { id: eventId });
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: 'Error deleting event' });
+    }
+  });
+  
   // === DATE OPTION ROUTES ===
   
   // Get date options for an event
