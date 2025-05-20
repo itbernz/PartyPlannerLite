@@ -108,55 +108,78 @@ export function EventTab() {
       
       {/* Date Selection Section */}
       <div className="mb-6">
-        <h3 className="font-heading font-semibold text-lg mb-3">Select available dates</h3>
+        <h3 className="font-heading font-semibold text-lg mb-3">
+          {event.finalDateOptionId ? "Event Date" : "Select available dates"}
+        </h3>
         
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="dateOptions"
-              render={() => (
-                <FormItem>
-                  <div className="grid grid-cols-1 gap-3">
-                    {event.dateOptions?.map((option: DateOption) => (
-                      <FormField
-                        key={option.id}
-                        control={form.control}
-                        name="dateOptions"
-                        render={({ field }) => {
-                          return (
-                            <FormItem
-                              key={option.id}
-                              className="flex items-center p-4 border border-input rounded-xl bg-card hover:border-primary transition cursor-pointer"
-                            >
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value?.includes(option.id)}
-                                  onCheckedChange={(checked) => {
-                                    return checked
-                                      ? field.onChange([...field.value, option.id])
-                                      : field.onChange(
-                                          field.value?.filter(
-                                            (value) => value !== option.id
-                                          )
-                                        );
-                                  }}
-                                />
-                              </FormControl>
-                              <div className="ml-4">
-                                <p className="font-medium">{option.date}</p>
-                                <p className="text-sm text-muted-foreground">{option.time}</p>
-                              </div>
-                            </FormItem>
-                          );
-                        }}
-                      />
-                    ))}
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        {event.finalDateOptionId ? (
+          <div className="mb-4 p-4 bg-green-100 dark:bg-green-900 rounded-lg">
+            <div className="flex items-center mb-2">
+              <div className="bg-green-500 rounded-full p-1 mr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6L9 17l-5-5"></path>
+                </svg>
+              </div>
+              <h4 className="font-semibold text-green-800 dark:text-green-100">The event date is locked in!</h4>
+            </div>
+            <p className="text-green-700 dark:text-green-200 ml-8">
+              See you on{" "}
+              <span className="font-semibold">
+                {event.dateOptions?.find(option => option.id === event.finalDateOptionId)?.date || ""}
+                {" at "}
+                {event.dateOptions?.find(option => option.id === event.finalDateOptionId)?.time || ""}
+              </span>
+            </p>
+          </div>
+        ) : (
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="dateOptions"
+                render={() => (
+                  <FormItem>
+                    <div className="grid grid-cols-1 gap-3">
+                      {event.dateOptions?.map((option: DateOption) => (
+                        <FormField
+                          key={option.id}
+                          control={form.control}
+                          name="dateOptions"
+                          render={({ field }) => {
+                            return (
+                              <FormItem
+                                key={option.id}
+                                className="flex items-center p-4 border border-input rounded-xl bg-card hover:border-primary transition cursor-pointer"
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(option.id)}
+                                    onCheckedChange={(checked) => {
+                                      return checked
+                                        ? field.onChange([...field.value, option.id])
+                                        : field.onChange(
+                                            field.value?.filter(
+                                              (value) => value !== option.id
+                                            )
+                                          );
+                                    }}
+                                  />
+                                </FormControl>
+                                <div className="ml-4">
+                                  <p className="font-medium">{option.date}</p>
+                                  <p className="text-sm text-muted-foreground">{option.time}</p>
+                                </div>
+                              </FormItem>
+                            );
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            
             
             {/* RSVP Form */}
             <Card className="rounded-xl">

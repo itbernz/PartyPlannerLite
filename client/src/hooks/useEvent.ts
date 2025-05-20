@@ -49,9 +49,22 @@ export function useEvent(): UseEventResult {
     },
   });
   
+  const { mutateAsync: setFinalDateMutation } = useMutation({
+    mutationFn: async (dateOptionId: number) => {
+      await apiRequest('POST', `/api/events/${eventId}/final-date`, { dateOptionId });
+      
+      // Refresh event data
+      await queryClient.invalidateQueries({ queryKey: [`/api/events/${eventId}`] });
+    },
+  });
+  
   const updateEvent = async (data: UpdateEventParams) => {
     await updateEventMutation(data);
   };
   
-  return { event, isLoading, updateEvent, isUpdating };
+  const setFinalDate = async (dateOptionId: number) => {
+    await setFinalDateMutation(dateOptionId);
+  };
+  
+  return { event, isLoading, updateEvent, setFinalDate, isUpdating };
 }

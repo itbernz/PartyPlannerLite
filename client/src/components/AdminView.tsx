@@ -42,7 +42,7 @@ type DateOptionInput = {
 export function AdminView() {
   const [currentTab, setCurrentTab] = useState<AdminTabType>("event");
   const { toast } = useToast();
-  const { event, isLoading: isEventLoading, updateEvent } = useEvent();
+  const { event, isLoading: isEventLoading, updateEvent, setFinalDate } = useEvent();
   const { rsvps, dateOptionsWithVotes, isLoading: isRsvpsLoading } = useRsvp();
   const { activities, isLoading: isActivitiesLoading, deleteActivity } = useActivities();
   
@@ -327,18 +327,55 @@ export function AdminView() {
                     <div className="mb-3">
                       <h4 className="text-sm font-medium mb-1">Date Preferences:</h4>
                       <div className="bg-muted p-2 rounded">
+                        {event?.finalDateOptionId ? (
+                          <div className="mb-3 p-3 bg-green-100 dark:bg-green-900 rounded-lg">
+                            <p className="font-semibold text-green-800 dark:text-green-100">
+                              Final date selected!
+                            </p>
+                            <p className="text-sm text-green-700 dark:text-green-200 mt-1">
+                              {dateOptionsWithVotes.find(option => option.id === event.finalDateOptionId)?.date}
+                              {" at "}
+                              {dateOptionsWithVotes.find(option => option.id === event.finalDateOptionId)?.time}
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="mb-3 p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                            <p className="text-sm text-blue-700 dark:text-blue-200">
+                              Select a final date from the options below to lock it in. Guests will be notified of your selection.
+                            </p>
+                          </div>
+                        )}
+                        
                         {dateOptionsWithVotes.map((option) => (
-                          <div key={option.id}>
+                          <div key={option.id} className="relative">
                             <div className="flex justify-between mb-1">
                               <span className="text-sm">{option.date}:</span>
                               <span className="text-sm font-medium">{option.votes} {option.votes === 1 ? 'vote' : 'votes'}</span>
                             </div>
-                            <div className="w-full bg-muted-foreground/20 rounded-full h-2 mb-3">
+                            <div className="w-full bg-muted-foreground/20 rounded-full h-2 mb-1">
                               <div 
-                                className="bg-primary h-2 rounded-full" 
+                                className={`${option.id === event?.finalDateOptionId ? 'bg-green-500' : 'bg-primary'} h-2 rounded-full`}
                                 style={{ width: `${option.percentage}%` }}
                               />
                             </div>
+                            {event?.finalDateOptionId === option.id ? (
+                              <div className="text-xs text-green-600 dark:text-green-400 mb-3 font-medium">
+                                Final date ✓
+                              </div>
+                            ) : (
+                              <div className="flex justify-end mb-3">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setFinalDate(option.id)}
+                                  disabled={!!event?.finalDateOptionId}
+                                  className="text-xs"
+                                >
+                                  Set as final date
+                                </Button>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
