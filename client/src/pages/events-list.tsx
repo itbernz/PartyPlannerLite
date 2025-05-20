@@ -119,27 +119,69 @@ export default function EventsList() {
     }
   }
   
-  function handleExportEvent(event: Event) {
-    // Create a JSON blob with the event data
-    const eventData = JSON.stringify(event, null, 2);
-    const blob = new Blob([eventData], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    // Create a temporary link and trigger download
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `event-${event.id}-${event.title.toLowerCase().replace(/\s+/g, '-')}.json`;
-    document.body.appendChild(a);
-    a.click();
-    
-    // Clean up
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    toast({
-      title: "Event exported",
-      description: "The event data has been downloaded as a JSON file.",
-    });
+  async function handleExportEvent(event: Event) {
+    try {
+      // Create a JSON blob with the event data
+      const eventData = JSON.stringify(event, null, 2);
+      const blob = new Blob([eventData], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      // Create a temporary link and trigger download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `event-${event.id}-${event.title.toLowerCase().replace(/\s+/g, '-')}.json`;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Event exported",
+        description: "The event data has been downloaded as a JSON file.",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Export failed",
+        description: "Failed to export event data.",
+      });
+    }
+  }
+  
+  async function handleExportRsvps(event: Event) {
+    try {
+      // Fetch RSVPs for this event
+      const res = await fetch(`/api/events/${event.id}/rsvps/export`);
+      if (!res.ok) throw new Error("Failed to export RSVPs");
+      
+      // Get the blob from response
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      
+      // Create a temporary link and trigger download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `rsvps-${event.id}-${event.title.toLowerCase().replace(/\s+/g, '-')}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: "RSVPs exported",
+        description: "The RSVPs have been downloaded as a CSV file.",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Export failed",
+        description: "Failed to export RSVPs data.",
+      });
+    }
   }
   
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -305,7 +347,11 @@ export default function EventsList() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => handleExportEvent(event)}>
                         <Download className="mr-2 h-4 w-4" />
-                        Export Event
+                        Export Event Data
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleExportRsvps(event)}>
+                        <Download className="mr-2 h-4 w-4" />
+                        Export RSVPs & Emails
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleOpenDeleteDialog(event)}>
                         <Trash2 className="mr-2 h-4 w-4 text-red-500" />

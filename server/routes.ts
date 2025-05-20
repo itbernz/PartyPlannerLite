@@ -174,6 +174,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(rsvps);
   });
   
+  // Export RSVPs for an event as CSV
+  app.get('/api/events/:id/rsvps/export', async (req: Request, res: Response) => {
+    const eventId = parseInt(req.params.id);
+    if (isNaN(eventId)) {
+      return res.status(400).json({ message: 'Invalid event ID' });
+    }
+    
+    try {
+      // Get the event details first
+      const event = await storage.getEvent(eventId);
+      if (!event) {
+        return res.status(404).json({ message: 'Event not found' });
+      }
+      
+      // Get all RSVPs for the event
+      const rsvps = await storage.getRsvpsByEventId(eventId);
+      
+      // Create CSV data
+      const csvHeader = 'Name,Email,Wants Updates,Message,Date Selections,Submitted On\n';
+      const csvRows = rsvps.map(rsvp => {
+        const name = rsvp.name.replace(/,/g, ' '); // Remove commas from name
+        const email = rsvp.email || ''; // Handle null emails
+        const wantsUpdates = rsvp.wantsUpdates ? 'Yes' : 'No';
+        const message = rsvp.message ? rsvp.message.replace(/,/g, ' ') : ''; // Handle null messages
+        const dateSelections = rsvp.dateSelections
+          .map(date => `${date.date} at ${date.time}`)
+          .join('; ');
+        const submittedOn = new Date(rsvp.created).toLocaleString();
+        
+        return `"${name}","${email}","${wantsUpdates}","${message}","${dateSelections}","${submittedOn}"`;
+      }).join('\n');
+      
+      const csvData = csvHeader + csvRows;
+      
+      // Set headers for CSV download
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="rsvps-${event.title.toLowerCase().replace(/\s+/g, '-')}.csv"`);
+      
+      // Send CSV data
+      res.send(csvData);
+    } catch (error) {
+      console.error('Error exporting RSVPs:', error);
+      res.status(500).json({ message: 'Error exporting RSVPs' });
+    }
+  });
+  
   // Create RSVP
   app.post('/api/events/:id/rsvps', async (req: Request, res: Response) => {
     const eventId = parseInt(req.params.id);
