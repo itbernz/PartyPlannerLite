@@ -26,6 +26,7 @@ import { eq, and, sql, desc } from "drizzle-orm";
 
 export interface IStorage {
   // Event operations
+  getAllEvents(): Promise<Event[]>;
   getEvent(id: number): Promise<Event | undefined>;
   createEvent(event: InsertEvent): Promise<Event>;
   updateEvent(id: number, event: InsertEvent): Promise<Event | undefined>;
@@ -57,6 +58,10 @@ export interface IStorage {
 
 export class DatabaseStorage implements IStorage {
   // Event operations
+  async getAllEvents(): Promise<Event[]> {
+    return await db.select().from(events).orderBy(desc(events.created));
+  }
+  
   async getEvent(id: number): Promise<Event | undefined> {
     const [event] = await db.select().from(events).where(eq(events.id, id));
     return event;

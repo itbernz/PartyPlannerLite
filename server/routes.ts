@@ -37,6 +37,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // === EVENT ROUTES ===
   
+  // Get all events
+  app.get('/api/events', async (_req: Request, res: Response) => {
+    try {
+      const events = await storage.getAllEvents();
+      res.json(events);
+    } catch (error) {
+      res.status(500).json({ message: 'Server error' });
+    }
+  });
+  
   // Get event by ID
   app.get('/api/events/:id', async (req: Request, res: Response) => {
     const eventId = parseInt(req.params.id);
